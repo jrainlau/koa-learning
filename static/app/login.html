@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login</title>
+</head>
+<body>
+  <div>
+    <input type="text" name="" id="account" placeholder="Account">
+    <br>
+    <input type="password" name="" id="password" placeholder="Password">
+    <br>
+    <button id="submit">Submit</button>
+  </div>
+
+  <div>
+    <button id="get-users">Get Users</button>
+  </div>
+
+  <script>
+    document.querySelector('#submit').addEventListener('click', submit)
+    document.querySelector('#get-users').addEventListener('click', getUsers)
+
+    const myHeaders = new Headers()
+    myHeaders.append('Content-Type', 'application/json')
+
+    function submit () {
+      const account = document.querySelector('#account').value
+      const password = document.querySelector('#password').value
+      fetch('/user/login', {
+        method: 'post',
+        headers: myHeaders,
+        body: JSON.stringify({
+          account,
+          password
+        })
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+        if (data.token) {
+          sessionStorage.token = data.token
+        }
+      })
+    }
+
+    function getUsers () {
+      myHeaders.append('Authorization', `Bearer ${sessionStorage.token}`)
+      fetch('/user', {
+        method: 'get',
+        headers: myHeaders
+      }).then((response) => {
+        return response.json()
+      }).then((data) => {
+        console.log(data)
+      })
+    }
+  </script>
+</body>
+</html>
